@@ -1,0 +1,8 @@
+{
+  "name": "Nexus CRM",
+  "description": "Modern cloud-native Real Estate CRM platform with enterprise SaaS dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
