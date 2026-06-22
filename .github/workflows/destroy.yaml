@@ -1,0 +1,41 @@
+name: deplyment
+on: 
+  schedule:
+    - cron: '*/10 * * * *'
+  
+
+jobs: 
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: chekout code
+        uses: actions/checkout@v2
+
+      - name: update system
+        run: |
+          sudo apt-get update -y 
+          sudo apt-get install -y python3-pip
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3  
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::716563790644:role/git-ops
+          aws-region: us-west-1
+
+      - name: Terraform apply
+        run:  |
+         terraform init 
+         terraform plan 
+        working-directory: ./tf
+
+      - name: destroy
+        if: github.ref_name == 'dev' && github.event_name == 'schedule'
+        run: terraform destroy --auto-approve
+
