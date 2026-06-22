@@ -14,6 +14,11 @@ jobs:
     steps:
       - name: chekout code
         uses: actions/checkout@v2
+        with:
+          ref: dev
+
+      - name: branch
+        run: git branch 
 
       - name: update system
         run: |
