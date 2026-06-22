@@ -29,6 +29,12 @@ jobs:
         with:
           terraform_version: 1.15.6  
 
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::291433605780:role/git-dev
+          aws-region: us-west-1
+          
       - name: Terraform apply
         run:  |
          terraform init
