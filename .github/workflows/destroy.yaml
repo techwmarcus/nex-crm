@@ -1,7 +1,7 @@
-name: deplyment
+name: destroy
 on: 
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/3 * * * *'
   
 
 jobs: 
