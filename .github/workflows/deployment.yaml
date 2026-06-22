@@ -32,6 +32,7 @@ jobs:
          terraform init
          terraform plan 
          terraform apply -auto-approve
+        working-directory: ./tf
 
       - name: setup minikube
         run:  |
