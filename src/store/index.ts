@@ -5,9 +5,10 @@ import { mockUser } from '../services/mockData';
 type AppState = {
   user: User | null;
   isAuthenticated: boolean;
+  accessToken: string | null;
   theme: 'light' | 'dark';
   sidebarOpen: boolean;
-  login: () => void;
+  login: (user: User, token?: string | null) => void;
   logout: () => void;
   toggleTheme: () => void;
   setSidebarOpen: (open: boolean) => void;
@@ -15,11 +16,12 @@ type AppState = {
 
 export const useAppStore = create<AppState>((set) => ({
   user: mockUser, // Auto-login for prototype
-  isAuthenticated: true, 
+  isAuthenticated: true,
+  accessToken: null,
   theme: 'light',
   sidebarOpen: true,
-  login: () => set({ user: mockUser, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+  login: (user, token) => set({ user, isAuthenticated: true, accessToken: token }),
+  logout: () => set({ user: null, isAuthenticated: false, accessToken: null }),
   toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 }));

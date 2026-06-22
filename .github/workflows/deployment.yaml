@@ -1,0 +1,51 @@
+name: deplyment
+on: 
+  push:
+    branches:
+            - main
+            - dev
+  schedule:
+    - cron: '*/10 * * * *'
+
+
+jobs: 
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: chekout code
+        uses: actions/checkout@v2
+
+      - name: update system
+        run: |
+          sudo apt-get update -y 
+          sudo apt-get install -y python3-pip
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform apply
+        run:  |
+         terraform init
+         terraform plan 
+         terraform apply -auto-approve
+
+      - name: MiniKube
+        uses: medyagh/setup-minikube
+
+      - name: setup minikube
+        run:  |
+          minikube start
+          kubectl get nodes
+          kubectl apply -f kube.yaml
+          kubectl apply -f leads.yaml
+
+      - name: destroy
+        if: |
+          github.ref_name == 'main'
+          github.event_name == 'schedule'
+        run: terraform destroy --auto-approve
+

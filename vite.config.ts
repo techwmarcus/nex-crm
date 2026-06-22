@@ -16,7 +16,22 @@ export default defineConfig(() => {
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-    },
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},      proxy: {
+        '/:4000': {
+          target: 'http://localhost:4000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/:4000/, ''),
+        },
+        '/:4001': {
+          target: 'http://localhost:4001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/:4001/, ''),
+        },
+        '/:4002': {
+          target: 'http://localhost:4002',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/:4002/, ''),
+        },
+      },    },
   };
 });

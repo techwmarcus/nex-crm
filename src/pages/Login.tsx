@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAppStore } from '../store';
+import { mockUser } from '../services/mockData';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Building2 } from 'lucide-react';
@@ -18,6 +19,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export function Login() {
   const navigate = useNavigate();
   const { login } = useAppStore();
+  const [error, setError] = useState<string | null>(null);
   
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -28,9 +30,8 @@ export function Login() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    login();
+    setError(null);
+    login(mockUser, null);
     navigate('/');
   };
 
@@ -53,6 +54,11 @@ export function Login() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-xl sm:px-10 border border-slate-100">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                {error}
+              </div>
+            )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-slate-900">
                 Email address

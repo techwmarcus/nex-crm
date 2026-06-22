@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lead-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: leads
+  template:
+    metadata:
+      labels:
+        app: leads
+    spec:
+      containers:
+        - name: leads-api
+          image: techwmarcus/lead-service:v1
+          ports: 
+          - containerPort: 4001
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: leads-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: leads  # This must match your deployment label exactly!
+  ports:
+      port: 4001
+      targetPort: 4001

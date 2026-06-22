@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { leadApi, propertyApi } from '../services/api';
 import { mockDashboardStats, mockChartData, mockTasks } from '../services/mockData';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
+import { StatusBanner } from '../components/ui/StatusBanner';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, Users, Building2, Briefcase, DollarSign } from 'lucide-react';
 import { cn } from '../utils/cn';
@@ -31,8 +33,39 @@ function StatCard({ title, value, change, trend, icon: Icon }: any) {
 }
 
 export function Dashboard() {
+  const [stats, setStats] = useState({
+    totalLeads: mockDashboardStats.totalLeads,
+    propertiesListed: mockDashboardStats.propertiesListed,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [leadsRes, propsRes] = await Promise.all([
+          leadApi.getLeads(),
+          propertyApi.getProperties(),
+        ]);
+        setStats({
+          totalLeads: leadsRes.total || leadsRes.leads?.length || 0,
+          propertiesListed: propsRes.total || propsRes.properties?.length || 0,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Dashboard services are currently unavailable');
+        console.error('Failed to fetch dashboard stats', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStats();
+  }, []);
   return (
     <div className="space-y-6">
+      {error && (
+        <StatusBanner message="Some services are offline. Dashboard data may be stale." variant="warning" />
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Executive Dashboard</h1>
         <div className="flex bg-white border border-slate-200 rounded-lg shadow-sm p-1">
@@ -43,8 +76,8 @@ export function Dashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Leads" value={mockDashboardStats.totalLeads} change="+12.5%" trend="up" icon={Users} />
-        <StatCard title="Properties Listed" value={mockDashboardStats.propertiesListed} change="+4.2%" trend="up" icon={Building2} />
+        <StatCard title="Total Leads" value={stats.totalLeads} change="+12.5%" trend="up" icon={Users} />
+        <StatCard title="Properties Listed" value={stats.propertiesListed} change="+4.2%" trend="up" icon={Building2} />
         <StatCard title="Closed Deals" value={mockDashboardStats.closedDeals} change="-2.4%" trend="down" icon={Briefcase} />
         <StatCard title="Monthly Revenue" value={`$${(mockDashboardStats.monthlyRevenue / 1000000).toFixed(1)}M`} change="+18.2%" trend="up" icon={DollarSign} />
       </div>
