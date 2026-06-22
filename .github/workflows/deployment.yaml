@@ -33,9 +33,6 @@ jobs:
          terraform plan 
          terraform apply -auto-approve
 
-      - name: MiniKube
-        uses: medyagh/setup-minikube
-
       - name: setup minikube
         run:  |
           minikube start
